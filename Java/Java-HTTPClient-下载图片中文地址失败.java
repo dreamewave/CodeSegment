@@ -14,6 +14,7 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import com.zteits.atms.util.file.FileOperater;
 import flex.messaging.util.URLEncoder;
 
+//下载路径有中文没有设置编码导致下载失败
 public class DownLoadImgeUtil
 {
 
@@ -32,63 +33,6 @@ public class DownLoadImgeUtil
         fo.newFolder(filepath);
         return filepath;
     }
-
-    /**
-     * 下载图片
-     * @param fileimgpath 文件名称
-     * @param imageList 图片路径
-     * @return  是否下载成功
-     * @throws Exception
-     */
-    public static int downLoadImge(String fileimgpath, List imageList) throws Exception
-    {
-        String filerootpath = getPath();
-        System.out.println("filerootpath: " + filerootpath);
-        String filepath = filerootpath + "\\" + fileimgpath;
-        System.out.println("filepath: " + filepath);
-        OutputStream os = new FileOutputStream(filepath + ".zip");
-        ZipOutputStream out = new ZipOutputStream(new BufferedOutputStream(os));
-        HttpClient hc = new HttpClient();
-        GetMethod getMethod = null;
-        String filename1;
-        try
-        {
-            for(int i = 0; i < imageList.size(); i++)
-            {
-                System.out.println("======== " + i);
-                try
-                {
-                    String fullURl = (String)imageList.get(i);
-                    //现场发布的图片路径，支持中文
-                    String strurl = tranformStyle(fullURl.substring(fullURl.lastIndexOf("$http")+1));
-                    getMethod = new GetMethod(strurl);
-                    int randomNum = (int) (Math.random()*9000+1000);
-                    String path;
-                    path = fullURl.substring((fullURl.lastIndexOf(".")+1),fullURl.length());
-                    // 重命名
-                    filename1 = fullURl.substring(0, (fullURl.lastIndexOf("$http")+1))+String.valueOf(randomNum)+"."+path;
-                    hc.executeMethod(getMethod);
-
-                    out.putNextEntry(new ZipEntry(filename1));
-                    out.write(getMethod.getResponseBody());
-//                    out.setEncoding("gbk");
-                }
-                catch(Exception e)
-                {
-                    e.printStackTrace();
-                }
-            }
-            // 释放连接
-            getMethod.releaseConnection();
-            out.flush();
-            out.close();
-        }
-        catch(Exception e)
-        {
-            e.printStackTrace();
-        }
-        return 1;
-    }
     /**
      * 下载图片(根据路口分类放在不同文件夹)
      * @param fileimgpath 文件名称
@@ -96,7 +40,7 @@ public class DownLoadImgeUtil
      * @return  是否下载成功
      * @throws Exception
      */
-    public static int downLoadImge1(String fileimgpath, List imageList) throws Exception
+    public static int downLoadImge(String fileimgpath, List imageList) throws Exception
     {
         String filerootpath = getPath();
         String filepath = filerootpath + "\\" + fileimgpath;
